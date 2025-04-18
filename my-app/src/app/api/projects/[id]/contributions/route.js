@@ -27,11 +27,13 @@ export async function POST(req,  { params }) {
 
     await db();
 
-    // Create the contribution
+    // Simple logic: if user is logged in, use their name; if not logged in, make it anonymous
+    const isUserLoggedIn = !!session?.user?.id;
+    
     const contribution = {
-      contributor:session?.user?.id,
+      contributor: session?.user?.id || null, // Allow null if user not logged in
       amount: parseFloat(amount),
-      isAnonymous,
+      isAnonymous: !isUserLoggedIn, // If logged in, never anonymous; if not logged in, always anonymous
       contributedAt: new Date(),
       paymentIntentId
     };

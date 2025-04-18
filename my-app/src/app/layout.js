@@ -3,7 +3,7 @@ import { Toaster } from "@/components/ui/toaster";
 import "./globals.css";
 import { useState, useEffect } from "react";
 import Navbar from "@/components/Navbar";
-import { SessionProvider } from "next-auth/react";
+import { SessionProvider, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export default function RootLayout({ children }) {
@@ -26,9 +26,13 @@ export default function RootLayout({ children }) {
     };
   }, []);
 
-  function handleSignout() {
+  async function handleSignout() {
     localStorage.removeItem("success");
     setIsAuthenticated(false);
+    
+    // Also sign out from Next-Auth to properly clear the session
+    await signOut({ redirect: false });
+    
     router.push("/"); // Redirect to home after logout
   }
 

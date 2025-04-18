@@ -1,9 +1,10 @@
 "use client";
 import ProjectDetail2 from "@/components/ProjectDetails2";
-import { useEffect, useState } from "react";
+import { useEffect, useState, use } from "react";
 
 export default function HomePage({ params }) {
     const [projectData, setProjectData] = useState(null);
+    const unwrappedParams = use(params);
 
     const formatDate = (isoDate) => new Date(isoDate).toISOString().split('T')[0];
 
@@ -15,7 +16,7 @@ export default function HomePage({ params }) {
     };
 
     useEffect(() => {
-        if (!params?.id) return; // Prevent API call if ID is missing
+        if (!unwrappedParams?.id) return; // Prevent API call if ID is missing
 
         const getContributorName = async (contributorId, isAnonymous) => {
             if (isAnonymous || !contributorId) return "Anonymous";
@@ -31,7 +32,7 @@ export default function HomePage({ params }) {
 
         const fetchProjectData = async () => {
             try {
-                const response = await fetch(`/api/projects/${params.id}`);
+                const response = await fetch(`/api/projects/${unwrappedParams.id}`);
                 if (!response.ok) throw new Error('Failed to fetch project');
 
                 const project = await response.json();
@@ -57,7 +58,7 @@ export default function HomePage({ params }) {
         };
 
         fetchProjectData();
-    }, [params?.id]); // Add dependency to re-run when `params.id` changes
+    }, [unwrappedParams?.id]); // Update dependency to use unwrapped params
 
     return <div>{projectData && <ProjectDetail2 {...projectData} />}</div>;
 }
