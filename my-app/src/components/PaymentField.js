@@ -4,7 +4,6 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Checkbox } from "@/components/ui/checkbox"
 import { Button } from "@/components/ui/button"
 import { useToast } from "@/hooks/use-toast"
 import { loadStripe } from '@stripe/stripe-js';
@@ -18,7 +17,7 @@ import {
 // Initialize Stripe
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY);
 
-function CheckoutForm({ amount, projectId, isAnonymous, onSuccess, onError }) {
+function CheckoutForm({ amount, projectId, onSuccess, onError }) {
   const stripe = useStripe();
   const elements = useElements();
   const [isLoading, setIsLoading] = useState(false);
@@ -98,7 +97,6 @@ function CheckoutForm({ amount, projectId, isAnonymous, onSuccess, onError }) {
             },
             body: JSON.stringify({
               amount: parseFloat(amount),
-              isAnonymous,
               paymentIntentId: paymentIntent.id
             }),
           });
@@ -162,7 +160,6 @@ function CheckoutForm({ amount, projectId, isAnonymous, onSuccess, onError }) {
 
 export default function PaymentField({ onClose, id }) {
   const [amount, setAmount] = useState("")
-  const [isAnonymous, setIsAnonymous] = useState(false)
   const [clientSecret, setClientSecret] = useState("")
   const { toast } = useToast()
 
@@ -244,14 +241,6 @@ export default function PaymentField({ onClose, id }) {
             step="1"
           />
         </div>
-        <div className="flex items-center space-x-2">
-          <Checkbox
-            id="anonymous"
-            checked={isAnonymous}
-            onCheckedChange={(checked) => setIsAnonymous(Boolean(checked))}
-          />
-          <Label htmlFor="anonymous">Make contribution anonymous</Label>
-        </div>
         
         {clientSecret && (
           <Elements stripe={stripePromise} options={{
@@ -268,7 +257,6 @@ export default function PaymentField({ onClose, id }) {
             <CheckoutForm 
               amount={amount}
               projectId={id}
-              isAnonymous={isAnonymous}
               onSuccess={handleSuccess}
               onError={handleError}
             />
